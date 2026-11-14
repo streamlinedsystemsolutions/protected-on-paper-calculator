@@ -2,7 +2,7 @@
 
 A free, standalone Colorado assistance-reference calculator built as one `index.html` file. It runs in the visitor's browser with no paid hosting, database, app download, subscription, or outside JavaScript libraries.
 
-**Status:** Public source file uploaded. The calculator is in staging and must not be represented as a completed public release until GitHub Pages is enabled and the live webpage passes testing.
+**Status:** The standalone calculator is publicly served at https://streamlinedsystemsolutions.github.io/protected-on-paper-calculator/ on free GitHub Pages. The latest keyboard-accessibility patch deployed successfully. This does not mean all benefits data, devices, accessibility needs, and external provider links have passed full hard-launch QA.
 
 ## Enable GitHub Pages
 
@@ -26,3 +26,11 @@ A GitHub Free account supports Pages with a public repository. No custom domain,
 - The primary Protected on Paper WordPress site remains private until separate hard-launch approval.
 
 Official instructions: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+
+## Accessibility and data-integrity checkpoint — November 13, 2026
+
+- Accessibility patch: commit `6b356a6ecb76b14fa88b35823f6ba704632fba1f` (plain-English three-step introduction, keyboard focus restoration after closing the screening dialog, dialog description for screen readers, and truthful GitHub hosting/privacy wording). All original embedded benefit data and mathematical formulas were preserved.
+- Verified the linked GitHub Pages deployment completed successfully: https://github.com/streamlinedsystemsolutions/protected-on-paper-calculator/actions/runs/43551326481
+- 48/48 **local** Chromium interaction regression checks passed at 320, 390, 768, and 1280px: modal opening/closing, Escape, keyboard focus, ZIP/county/income validation, results focus, 5%/$845 and 10%/$890 illustrative rent samples, no script errors, no outbound data requests, and no horizontal overflow. These are local browser tests, not separate iOS/Safari/Firefox or screen-reader certification.
+- Structural data QA: 64 unique counties and matching county-contact entries, 642 five-digit ZIP entries with no unknown counties, 62 local-program records with HTTPS URLs and unique IDs, 2,652 rule entries with valid sources and nonnegative numeric values. ZIP coverage, official current benefit limits, agency eligibility, dates and funding availability still require independent source checks.
+- This calculator remains an educational starting point. Do not treat a matching amount, medical threshold selection, county hint, or resource listing as an approval or currently open application. The main WordPress website remains private while its separate hard-launch QA is unfinished.
