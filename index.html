@@ -191,19 +191,18 @@ function render(){const county=$('county').value,size=Number($('household').valu
   const cityConfirmed=jurisdiction==='incorporated'&&!!enteredPlace;
   const unincorporated=jurisdiction==='unincorporated';
   const onlyOpen=decision!=='within';
-  const eligibleTopics=new Set(matched.map(x=>x.program==='snap'?'food':['leap','eoc_bill'].includes(x.program)?'utilities':x.program==='chfa_multifamily'?'affordable_housing':null).filter(Boolean));
   const matchingPrograms=(data.localPrograms||[]).filter(p=>
     p.counties.includes(county) && (!topicsForIssue || p.topics.includes(topicsForIssue)) &&
-    (!onlyOpen || p.access_track==='open') &&
-    (onlyOpen || p.access_track==='open' || (p.topics.includes('food')&&eligibleTopics.has('food')) || (p.topics.includes('utilities')&&eligibleTopics.has('utilities')) || (p.topics.includes('housing')&&eligibleTopics.has('affordable_housing')&&p.affordable_reference_only===true)) &&
     (p.scope==='county' || p.scope==='multi_county' ||
      (p.scope==='city' && cityConfirmed && p.areas.some(c=>normPlace(c)===enteredPlace)) ||
      (p.scope==='county_except_city' && jurisdiction!=='unsure' && (jurisdiction==='unincorporated' || !enteredPlace || !p.exclude.some(c=>normPlace(c)===enteredPlace))) ||
-     (p.scope==='region'&&!!enteredPlace&&p.areas.some(c=>normPlace(c)===enteredPlace))));
+     (p.scope==='region' && ((p.areas||[]).length===0 || (!!enteredPlace&&p.areas.some(c=>normPlace(c)===enteredPlace))))));
  const serviceCount=matchingPrograms.length;
+ const openPrograms=matchingPrograms.filter(p=>p.access_track==='open');
+ const conditionalPrograms=matchingPrograms.filter(p=>p.access_track!=='open');
  const showProgram=p=>{
    const geographic=p.scope==='county'?'Countywide starting point':p.scope==='multi_county'?'Regional resource serving '+safe(county)+' County':p.scope==='city'?'Limited to '+p.areas.map(safe).join(', '):
-     p.scope==='county_except_city'?'Boulder County excluding '+p.exclude.map(safe).join(', '):'Restricted service area — confirm exact address';
+     p.scope==='county_except_city'?'Boulder County excluding '+p.exclude.map(safe).join(', '):'Regional lead ONLY — address NOT verified; call before applying';
    const access=p.status==='window_past'?'Prior application window closed; confirm next intake':
       p.status==='unverified'?'Current funding not verified':p.status==='closed_at_review'?'Portal closed at the last review; see next published opening':p.status==='limited_window'?'Applications are limited-window; check the next opening':p.status==='resource'?'Information/referral only; contact provider':'Ask provider to confirm current funding/intake';
    // Provider-fit information is verified for selected entries, and always distinguishes provider rules from broad income references.
@@ -225,12 +224,12 @@ function render(){const county=$('county').value,size=Number($('household').valu
       ' · <a href="'+url(p.source)+'" target="_blank" rel="noopener noreferrer">Service-area source ↗</a> · Reviewed '+safe(p.checked)+'</p></article>';
  };
  const localDirectory='<section class="local-directory" aria-label="'+safe(county)+' County source-linked service-area listings"><h3 class="subsection">'+
-   serviceCount+' county-filtered resource'+(serviceCount===1?'':'s')+' for '+safe(county)+' County'+(enteredPlace?' — '+safe($('city').value.trim()):'')+'</h3>'+
-   '<p class="small">These are geographically screened starting points, <strong>not individual financial-eligibility matches</strong>. A SNAP, LEAP or CHFA income comparison never establishes eligibility for a listed nonprofit, housing authority, or emergency grant. Some programs are referrals only; funding, intake, eligibility and fees must be confirmed. '+
-   (enteredPlace?'Location-limited listings have been narrowed using your community name; restricted-region providers without independently verified town coverage are omitted. If you are near a service boundary, check that provider separately.':
-   'Add a city or community to narrow listings. Entries marked “Limited to” or “Restricted service area” do not serve the entire county. When you type a town, unmatched restricted-region listings are hidden.')+'</p>'+
-   (serviceCount?'<div class="result-cards">'+matchingPrograms.map(showProgram).join('')+'</div>':
-   '<div class="unknown-box">No verified '+(onlyOpen?'non-income-restricted local provider':'local provider')+' in this topic has been indexed for '+safe(county)+' County and your confirmed local jurisdiction. This is a database gap, not a statement that no help exists. Use the public state and local government resources below.</div>')+'</section>';
+   serviceCount+' local resource lead'+(serviceCount===1?'':'s')+' for '+safe(county)+' County'+(enteredPlace?' — '+safe($('city').value.trim()):'')+'</h3>'+
+   '<p class="small"><strong>Important: these are NOT eligibility matches or confirmed open grants.</strong> An income comparison for SNAP, LEAP or CHFA does not establish eligibility for local nonprofits. Start with general services below, then expand other programs only when you want to check their individual rules. Provider funds, age/disability conditions, application deadlines, town boundaries and fees may differ. Regional listings without a confirmed town are <strong>possible referral leads only</strong>; the provider must verify your exact address.</p>'+
+   (openPrograms.length?'<h4>General guidance and resources without a listed income cutoff</h4><div class="result-cards">'+openPrograms.map(showProgram).join('')+'</div>':
+   '<p class="small">No county-specific general-use listing has been verified for this topic. You can still use the statewide information sources on this page.</p>')+
+   (conditionalPrograms.length?'<details class="rent-explain"'+(!onlyOpen?' open':'')+'><summary><strong>Show '+conditionalPrograms.length+' more programs with income, age or location requirements</strong></summary><p class="small">These entries are <strong>NOT approvals or promises of currently open funds</strong>. Confirm eligibility and application windows with each provider. “Regional lead” means the specific address is unverified.</p><div class="result-cards">'+conditionalPrograms.map(showProgram).join('')+'</div></details>':'')+
+   (!serviceCount?'<div class="unknown-box">No indexed county-local provider for this topic and location. This is a database gap, not proof that no help exists. Use official public state and county resources below.</div>':'')+'</section>';
 
   const publicSources=(data.openResources||[]).filter(p=>issue==='all'||p.topics.includes(issue));
   const openDirectory='<section id="open-access-resources" class="local-directory"><h3 class="subsection">Public information and services without an income-only intake requirement</h3>'+ 
