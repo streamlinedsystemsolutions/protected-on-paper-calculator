@@ -97,6 +97,10 @@ function updateKnownCitySuggestions(){const list=$('city-suggestions');if(!list)
 $('county').addEventListener('change',updateKnownCitySuggestions);
 function open(focusZip=true){if(!dialog.open){dialog.showModal();if(focusZip)$('zip').focus()}}
 $('open').addEventListener('click',()=>open(true));
+// Optional direct link from the free WordPress homepage: #start opens the existing accessible dialog.
+// No personal answers are placed in the URL or stored.
+if(window.location.hash==='#start')open(true);
+window.addEventListener('hashchange',()=>{if(window.location.hash==='#start')open(true)});
 $('close').addEventListener('click',()=>{dialog.close();$('open').focus({preventScroll:true});});
 dialog.addEventListener('cancel',()=>{requestAnimationFrame(()=>$('open').focus({preventScroll:true}));});
 $('skip').addEventListener('click',()=>{dialog.close();window.location.hash='no-income';$('no-income').focus({preventScroll:true});});
