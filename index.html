@@ -226,7 +226,7 @@ function render(){const county=$('county').value,size=Number($('household').valu
     p.status!=='unverified' && p.counties.includes(county) && (!topicsForIssue || p.topics.includes(topicsForIssue)) &&
     (p.scope==='county' || p.scope==='multi_county' ||
      (p.scope==='city' && cityConfirmed && p.areas.some(c=>normPlace(c)===enteredPlace)) ||
-     (p.scope==='county_except_city' && jurisdiction!=='unsure' && (jurisdiction==='unincorporated' || !enteredPlace || !p.exclude.some(c=>normPlace(c)===enteredPlace))) ||
+     (p.scope==='county_except_city' && (unincorporated || (cityConfirmed && !p.exclude.some(c=>normPlace(c)===enteredPlace)))) ||
      (p.scope==='region' && ((p.areas||[]).length===0 || (!!enteredPlace&&p.areas.some(c=>normPlace(c)===enteredPlace))))));
  const serviceCount=matchingPrograms.length;
  const openPrograms=matchingPrograms.filter(p=>p.access_track==='open');
